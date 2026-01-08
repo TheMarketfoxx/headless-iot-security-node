@@ -63,6 +63,15 @@ The interface layer is intentionally separated from the compute layer to improve
 - [ ] Field testing and iteration  
 
 ---
+## ⚙️ Setup Progress
+
+The system is currently in the provisioning phase.
+
+- Raspberry Pi OS / Pwnagotchi-inspired image is being written to removable storage
+- Headless configuration planned (SSH, Wi-Fi, unattended boot)
+- Automation and service-based operation will be layered after first boot validation
+
+This phase focuses on establishing a stable, reproducible baseline before enabling autonomous behavior.
 
 ## ⚠️ Disclaimer
 
