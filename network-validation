@@ -1,0 +1,20 @@
+# Network Validation Notes
+
+This document captures the host-side validation steps used to confirm
+successful headless USB networking with an embedded IoT device.
+
+## Tools used
+- Windows PowerShell
+- ipconfig
+- arp
+- ping
+- ssh
+
+## Validation sequence
+1. Confirm USB Ethernet (RNDIS) adapter is UP
+2. Verify host IP assignment
+3. Discover device via ARP
+4. Confirm ICMP reachability
+5. Establish SSH access
+
+This mirrors real-world device onboarding in restricted or offline environments.
