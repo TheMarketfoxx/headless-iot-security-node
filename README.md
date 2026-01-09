@@ -1,85 +1,141 @@
-# Headless IoT Security Node
+# Headless IoT Security Node  
+**USB RNDIS • Headless Provisioning • Secure SSH Access**
 
-Modular, headless IoT security monitoring node aligned with **CompTIA CySA+**, **Blue Team**, and **IoT security** concepts.
+This repository documents a real-world **headless IoT device deployment and troubleshooting workflow**, focused on USB-based networking (RNDIS), IP validation, and secure SSH onboarding.
 
-This project focuses on secure-by-design architecture, threat modeling, logging awareness, and low-power embedded deployments.
-
----
-
-## 🔍 Project Overview
-
-This system is a **portable, headless IoT monitoring node** built to explore how constrained devices can be secured, monitored, and documented in real-world environments.
-
-Rather than prioritizing UI convenience, the design emphasizes:
-- Reduced attack surface
-- Modular architecture
-- Defensive security principles
-- Observability and logging readiness
+The goal is to demonstrate how small IoT devices can be securely brought online **without a screen, keyboard, or Wi-Fi**, using only a USB connection and proper host-side validation.
 
 ---
 
-## 🧠 Security & CySA+ Alignment
+## What this project demonstrates
 
-This project directly reinforces CySA+ domains, including:
+- Headless device provisioning (no monitor / no keyboard)
+- USB Gadget Mode networking (RNDIS / USB Ethernet)
+- Windows host network validation
+- IP addressing and ARP discovery
+- Secure SSH onboarding behavior on modern Linux images
+- System-level service validation on embedded devices
 
-- Asset identification and attack surface awareness  
-- Threat modeling and adversary thinking  
-- Secure architecture design  
-- Monitoring and telemetry concepts  
-- Documentation for incident response readiness  
-
-All design decisions are documented and intentional.
-
----
-
-## 🧱 Architecture Summary
-
-- **Compute:** Raspberry Pi Zero 2 W (headless Linux)
-- **Interface:** Raspberry Pi Pico with LCD (USB serial)
-- **Power:** External battery pack
-- **Design Pattern:** Modular, layered, and fault-tolerant
-
-The interface layer is intentionally separated from the compute layer to improve reliability and security.
+This project reflects **real troubleshooting**, not a happy-path tutorial.
 
 ---
 
-## 📄 Repository Documentation
+## Lab environment
 
-- `README.md` — Project overview and goals  
-- `THREAT_MODEL.md` — Threat analysis and attack surface review  
-- `HARDWARE.md` — Hardware architecture and design decisions *(in progress)*  
-- `ARCHITECTURE.md` — System architecture *(planned)*  
-- `LOGGING_AND_TELEMETRY.md` — Monitoring strategy *(planned)*  
+### Host system
+- Windows 11
+- PowerShell used for validation:
+  - `ipconfig`
+  - `arp -a`
+  - `ping`
+  - `ssh`
+- USB Ethernet / RNDIS Gadget driver
 
----
-
-## 🚀 Current Status
-
-- [x] Repository initialized  
-- [x] Threat model created  
-- [x] Modular hardware assembled  
-- [ ] Logging and telemetry implementation  
-- [ ] Documentation expansion  
-- [ ] Field testing and iteration  
-
----
-## ⚙️ Setup Progress
-
-The system is currently in the provisioning phase.
-
-- Raspberry Pi OS / Pwnagotchi-inspired image is being written to removable storage
-- Headless configuration planned (SSH, Wi-Fi, unattended boot)
-- Automation and service-based operation will be layered after first boot validation
-
-This phase focuses on establishing a stable, reproducible baseline before enabling autonomous behavior.
-
-## ⚠️ Disclaimer
-
-This project is for **educational and defensive security learning purposes only**.  
-No unauthorized access, exploitation, or misuse is intended or encouraged.
+### Device
+- Raspberry Pi Zero 2 W–class hardware
+- Linux-based headless image
+- systemd-managed services
+- OpenSSH enabled
 
 ---
 
-## 🤝 Connect
+## Network architecture (USB-only)
 
-If you're exploring **IoT security**, **Blue Team engineering**, or **embedded systems**, feel free to connect or follow along as this project evolves.
+Windows Host
+USB Ethernet (RNDIS)
+IP: 10.0.0.1
+|
+| USB cable
+|
+IoT Device
+USB Gadget Ethernet
+IP: 10.0.0.2
+> ⚠️ “No Internet access” on the USB adapter is **expected** in a direct host-to-device setup.
+
+---
+
+## Validation workflow
+
+### 1. Confirm USB Ethernet detection (Windows)
+- Device Manager → Network adapters
+- Verified presence of **USB Ethernet / RNDIS Gadget**
+- Link status: **Up**
+
+---
+
+### 2. Confirm host IP assignment
+```powershell
+ipconfig
+
+Expected:
+	•	Host receives an IP on the USB Ethernet interface
+Example: 10.0.0.1
+
+⸻
+
+3. Confirm Layer 2 discovery (ARP)
+arp -a
+
+Expected:
+	•	Device appears in ARP table after traffic
+	•	Example entry:
+
+10.0.0.2  <device-mac>  dynamic
+
+4. Confirm Layer 3 connectivity
+ping 10.0.0.2
+Expected:
+	•	Successful replies
+	•	0% packet loss
+
+SSH access validation
+
+ssh pi@10.0.0.2
+
+Observed behavior:
+	•	Initial warning that SSH may not work until a valid user is configured
+	•	This is intentional security hardening on modern images
+	•	After user/password setup, SSH access succeeds
+
+Successful login confirms:
+	•	Network stack is operational
+	•	SSH daemon is running
+	•	Device is fully reachable headlessly
+
+
+Security takeaway
+
+Modern embedded Linux images often block SSH access until first-boot user configuration is complete.
+
+This prevents:
+	•	Default credential abuse
+	•	Unauthorized remote access on first boot
+
+Understanding this behavior is critical for:
+	•	Secure IoT deployments
+	•	Blue-team device hardening
+	•	Enterprise headless provisioning pipelines
+
+⸻
+
+Project status
+
+✅ USB RNDIS networking functional
+✅ Host-to-device IP communication verified
+✅ SSH access established
+✅ Headless workflow confirmed
+
+⸻
+
+Next directions
+	•	Break this project into reusable modules
+	•	Automate host-side validation scripts
+	•	Add logging and monitoring for defensive analysis
+	•	Expand into wireless attack surface modeling (future repo)
+
+⸻
+
+Ethical use notice
+
+This project is for educational and defensive security learning only, performed on authorized hardware in controlled environments.
+
